@@ -729,17 +729,17 @@ app.post("/api/posts/delete/:serverId", (req, res) => {
 });
 
 
-// =====================================================
-// HTML
-// =====================================================
 app.get("/", (_, res) => res.sendFile(path.join(__dirname, "public/index.html")));
-app.get("/servers.html", (_, res) =>
-  res.sendFile(path.join(__dirname, "public/servers.html"))
-);
-app.get("/board.html", (_, res) =>
-  res.sendFile(path.join(__dirname, "public/board.html"))
-);
+app.get("/tests", (_, res) => res.sendFile(path.join(__dirname, "public/tests.html")));
+app.get("/ranking", (_, res) => res.sendFile(path.join(__dirname, "public/ranking.html")));
+app.get("/servers.html", (_, res) => res.sendFile(path.join(__dirname, "public/servers.html")));
+app.get("/board.html", (_, res) => res.sendFile(path.join(__dirname, "public/board.html")));
 
+["5","4","3","pre2","2","pre1","1","naraku"].forEach(level => {
+  app.get(`/test_${level}`, (_, res) =>
+    res.sendFile(path.join(__dirname, `public/tests/test_${level}.html`))
+  );
+});
 
 // =====================================================
 // Start
@@ -747,3 +747,4 @@ app.get("/board.html", (_, res) =>
 server.listen(PORT, () =>
   console.log("🚀 完全版サーバー稼働中 → http://localhost:" + PORT)
 );
+

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>サーバー一覧</title>
 
+<!-- ★ テーマ -->
 <link id="theme" rel="stylesheet" href="/css/light.css">
 <script src="/script/theme.js" defer></script>
 
@@ -15,7 +16,7 @@ body{
   margin:0;
 }
 
-/* --- 上部ナビバー（シンプル + プロっぽく） --- */
+/* --- 上部ナビバー --- */
 nav{
   background:var(--card);
   padding:12px 24px;
@@ -119,6 +120,15 @@ input:focus{
 
 <body>
 
+<script>
+// ------------------------------
+// ★ ログインしていなければ強制ログイン
+// ------------------------------
+if (!localStorage.getItem("username")) {
+  location.href = "/login.html";
+}
+</script>
+
 <nav>
   <a href="/">サーバー一覧</a>
   <a href="/tests.html">英検</a>
@@ -130,11 +140,14 @@ input:focus{
     ＋フレンド
   </a>
 
-  <!-- ★ 右端に丸アイコン（プロフィールへ） -->
+  <!-- ★ 右端の丸アイコン（プロフィール） -->
   <img id="navProfileIcon"
        src="/icons/default.png"
        onclick="location.href='/profile.html'"
        style="width:34px; height:34px; border-radius:50%; object-fit:cover; margin-left:auto; cursor:pointer;">
+
+  <!-- ★ ログアウト -->
+  <button onclick="logout()" style="margin-left:12px;">🚪</button>
 
   <button onclick="toggleTheme()" style="margin-left:12px;">🌓</button>
 </nav>
@@ -155,6 +168,28 @@ input:focus{
 </div>
 
 <script>
+// --------------------
+// ログアウト
+// --------------------
+function logout(){
+  localStorage.removeItem("username");
+  location.href = "/login.html";
+}
+
+// --------------------
+// ナビ右上のアイコン読み込み
+// --------------------
+async function loadNavIcon(){
+  const user = localStorage.getItem("username");
+  if (!user) return;
+
+  const res = await fetch(`/api/user/profile?user=${user}`);
+  const data = await res.json();
+
+  const icon = document.getElementById("navProfileIcon");
+  icon.src = data.icon || "/icons/default.png";
+}
+
 // --------------------
 // サーバー一覧読み込み
 // --------------------
@@ -200,7 +235,7 @@ async function createServer(){
 }
 
 // --------------------
-// サーバー削除（フェードアウト）
+// サーバー削除
 // --------------------
 async function deleteServer(id){
   if(!confirm("このサーバーを削除しますか？\n投稿データもすべて削除されます。"))
@@ -219,19 +254,9 @@ async function deleteServer(id){
     });
   }, 260);
 }
-async function loadNavIcon(){
-  const user = localStorage.getItem("username");
-  if (!user) return;
 
-  const res = await fetch(`/api/user/profile?user=${user}`);
-  const data = await res.json();
-
-  const icon = document.getElementById("navProfileIcon");
-  icon.src = data.icon || "/icons/default.png";
-}
-
+// 初期ロード
 loadNavIcon();
-
 loadServers();
 </script>
 

@@ -741,10 +741,40 @@ app.get("/board.html", (_, res) => res.sendFile(path.join(__dirname, "public/boa
   );
 });
 
+
+// ===============================
+// registerUser（login.js 用）
+// ===============================
+app.post("/api/registerUser", (req, res) => {
+  const name = req.body.name;
+  if (!name || !name.trim()) {
+    return res.json({ ok:false, error:"名前が必要です" });
+  }
+
+  const users = loadJSON(usersFile, {});
+
+  // 未登録なら作成
+  if (!users[name]) {
+    users[name] = {
+      bio: "",
+      icon: "/icons/default.png",
+      banner: "/icons/default_banner.jpg",
+      status: "online",
+      xp: 0,
+      posts: 0,
+      likes: 0
+    };
+  }
+
+  saveJSON(usersFile, users);
+  res.json({ ok:true });
+});
+
 // =====================================================
 // Start
 // =====================================================
 server.listen(PORT, () =>
   console.log("🚀 完全版サーバー稼働中 → http://localhost:" + PORT)
 );
+
 
